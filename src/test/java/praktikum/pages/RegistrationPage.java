@@ -1,54 +1,69 @@
 package praktikum.pages;
 
-import org.openqa.selenium.By;
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import praktikum.utils.AppConfig;
 
 public class RegistrationPage {
     private final WebDriver driver;
-    private final By nameField = By.xpath("//label[text()='Имя']/following-sibling::input");
-    private final By emailField = By.xpath("//label[text()='Email']/following-sibling::input");
-    private final By passwordField = By.xpath("//label[text()='Пароль']/following-sibling::input");
-    private final By registerButton = By.xpath("//button[text()='Зарегистрироваться']");
-    private final By loginLink = By.xpath("//a[text()='Войти']");
-    private final By errorMessage = By.xpath("//p[text()='Некорректный пароль']");
+
+    @FindBy(xpath = "//label[text()='Имя']/following-sibling::input")
+    private WebElement nameField;
+
+    @FindBy(xpath = "//label[text()='Email']/following-sibling::input")
+    private WebElement emailField;
+
+    @FindBy(xpath = "//label[text()='Пароль']/following-sibling::input")
+    private WebElement passwordField;
+
+    @FindBy(xpath = "//button[text()='Зарегистрироваться']")
+    private WebElement registerButton;
+
+    @FindBy(xpath = "//a[text()='Войти']")
+    private WebElement loginLink;
+
+    @FindBy(xpath = "//p[text()='Некорректный пароль']")
+    private WebElement errorMessage;
 
     public RegistrationPage(WebDriver driver) {
         this.driver = driver;
+        PageFactory.initElements(driver, this);
     }
 
+    @Step("Открыть страницу регистрации")
     public void open() {
-        driver.get("https://stellarburgers.education-services.ru/register");
+        driver.get(AppConfig.REGISTER_PAGE);
     }
 
-    public void waitForPageLoad() {
-        new WebDriverWait(driver, Duration.ofSeconds(5))
-                .until(ExpectedConditions.presenceOfElementLocated(nameField));
-    }
-
+    @Step("Ввести имя: {name}")
     public void enterName(String name) {
-        driver.findElement(nameField).sendKeys(name);
+        nameField.sendKeys(name);
     }
 
+    @Step("Ввести email: {email}")
     public void enterEmail(String email) {
-        driver.findElement(emailField).sendKeys(email);
+        emailField.sendKeys(email);
     }
 
+    @Step("Ввести пароль: {password}")
     public void enterPassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        passwordField.sendKeys(password);
     }
 
+    @Step("Нажать кнопку 'Зарегистрироваться'")
     public void clickRegisterButton() {
-        driver.findElement(registerButton).click();
+        registerButton.click();
     }
 
+    @Step("Нажать ссылку 'Войти' на странице регистрации")
     public void clickLoginLink() {
-        driver.findElement(loginLink).click();
+        loginLink.click();
     }
 
+    @Step("Зарегистрировать пользователя: {name} / {email} / {password}")
     public void register(String name, String email, String password) {
         enterName(name);
         enterEmail(email);
@@ -56,7 +71,8 @@ public class RegistrationPage {
         clickRegisterButton();
     }
 
+    @Step("Проверить, что отображается ошибка пароля")
     public boolean isPasswordErrorDisplayed() {
-        return driver.findElement(errorMessage).isDisplayed();
+        return errorMessage.isDisplayed();
     }
 }

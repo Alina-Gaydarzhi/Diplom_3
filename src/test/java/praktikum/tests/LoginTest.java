@@ -1,52 +1,87 @@
 package praktikum.tests;
 
-import org.junit.After;
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import praktikum.pages.HomePage;
-import praktikum.pages.LoginPage;
-import praktikum.steps.UserSteps;
+import praktikum.base.BaseTest;
+import praktikum.pages.*;
 
 import static org.junit.Assert.assertTrue;
 
-public class LoginTest {
-    private WebDriver driver;
-    private HomePage homePage;
+public class LoginTest extends BaseTest {
+
+    private MainPage mainPage;
     private LoginPage loginPage;
-    private UserSteps userSteps;
+    private RegistrationPage registrationPage;
+    private ForgotPasswordPage forgotPasswordPage;
 
     @Before
-    public void setUp() {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        homePage = new HomePage(driver);
-        loginPage = new LoginPage(driver);
-        userSteps = new UserSteps();
-
-        // создание пользователя через Steps
+    public void setUpLogin() {
         userSteps.createRandomUser();
-    }
 
-    @After
-    public void tearDown() {
-        userSteps.deleteUser();
-        if (driver != null) {
-            driver.quit();
-        }
+        mainPage = new MainPage(driver);
+        loginPage = new LoginPage(driver);
+        registrationPage = new RegistrationPage(driver);
+        forgotPasswordPage = new ForgotPasswordPage(driver);
     }
 
     @Test
-    public void shouldLoginFromMainPage() {
-        homePage.open();
-        homePage.clickLoginButton();
+    @DisplayName("Вход через кнопку 'Войти в аккаунт' на главной")
+    public void shouldLoginFromMainPageButton() {
+        mainPage.open();
+        mainPage.clickLoginButton();
 
         loginPage.login(
                 userSteps.getCurrentUser().getEmail(),
                 userSteps.getCurrentUser().getPassword()
         );
 
-        assertTrue("Не удалось войти", homePage.isOrderButtonDisplayed());
+        assertTrue("Не удалось войти через кнопку на главной",
+                mainPage.isOrderButtonDisplayed());
+    }
+
+    @Test
+    @DisplayName("Вход через кнопку 'Личный кабинет'")
+    public void shouldLoginFromPersonalAccountButton() {
+        mainPage.open();
+        mainPage.getHeader().clickPersonalAccount();
+
+        loginPage.login(
+                userSteps.getCurrentUser().getEmail(),
+                userSteps.getCurrentUser().getPassword()
+        );
+
+        assertTrue("Не удалось войти через личный кабинет",
+                mainPage.isOrderButtonDisplayed());
+    }
+
+    @Test
+    @DisplayName("Вход через ссылку 'Войти' на странице регистрации")
+    public void shouldLoginFromRegistrationPageLink() {
+        registrationPage.open();
+        registrationPage.clickLoginLink();
+
+        loginPage.login(
+                userSteps.getCurrentUser().getEmail(),
+                userSteps.getCurrentUser().getPassword()
+        );
+
+        assertTrue("Не удалось войти через ссылку на странице регистрации",
+                mainPage.isOrderButtonDisplayed());
+    }
+
+    @Test
+    @DisplayName("Вход через ссылку 'Войти' на странице восстановления пароля")
+    public void shouldLoginFromForgotPasswordPageLink() {
+        forgotPasswordPage.open();
+        forgotPasswordPage.clickLoginLink();
+
+        loginPage.login(
+                userSteps.getCurrentUser().getEmail(),
+                userSteps.getCurrentUser().getPassword()
+        );
+
+        assertTrue("Не удалось войти через ссылку на странице восстановления пароля",
+                mainPage.isOrderButtonDisplayed());
     }
 }

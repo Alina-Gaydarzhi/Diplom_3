@@ -1,74 +1,54 @@
 package praktikum.tests;
 
-import org.junit.After;
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import praktikum.api.UserApi;
 import praktikum.api.UserCredentials;
+import praktikum.base.BaseTest;
+import praktikum.pages.MainPage;
 import praktikum.pages.LoginPage;
 import praktikum.pages.RegistrationPage;
 
 import static org.junit.Assert.assertTrue;
 
-public class RegistrationTest {
-    private WebDriver driver;
+public class RegistrationTest extends BaseTest {
+
     private RegistrationPage registrationPage;
     private LoginPage loginPage;
-    private UserApi userApi;
-    private String accessToken;
-    private UserCredentials testUser;
+    private MainPage mainPage;
 
     @Before
-    public void setUp() {
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-
+    public void setUpRegistration() {
         registrationPage = new RegistrationPage(driver);
         loginPage = new LoginPage(driver);
-        userApi = new UserApi();
-
-        // Генерируем данные для пользователя (будет использован в UI-регистрации)
-        String email = "test" + System.currentTimeMillis() + "@test.com";
-        String password = "123456";
-        String name = "Test User";
-        testUser = new UserCredentials(email, password, name);
+        mainPage = new MainPage(driver);
     }
 
     @Test
+    @DisplayName("Успешная регистрация пользователя")
     public void shouldRegisterNewUserSuccessfully() {
+        UserCredentials newUser = userSteps.createRandomUser();
+
         registrationPage.open();
-        registrationPage.waitForPageLoad();
-        registrationPage.register(testUser.getName(), testUser.getEmail(), testUser.getPassword());
+        registrationPage.register(newUser.getName(), newUser.getEmail(), newUser.getPassword());
 
         loginPage.waitForPageLoad();
-        assertTrue("После регистрации не перешли на страницу логина",
-                driver.getCurrentUrl().contains("login"));
+        loginPage.login(newUser.getEmail(), newUser.getPassword());
 
-        // Получаем токен через API для удаления пользователя после теста
-        accessToken = userApi.login(testUser);
+        assertTrue("Пользователь не авторизован: кнопка заказа не отображается",
+                mainPage.isOrderButtonDisplayed());
     }
 
     @Test
+    @DisplayName("Ошибка при регистрации с паролем короче 6 символов")
     public void shouldShowErrorForShortPassword() {
         String shortPassword = "12345";
+        UserCredentials user = userSteps.createRandomUser();
 
         registrationPage.open();
-        registrationPage.waitForPageLoad();
-        registrationPage.register(testUser.getName(), testUser.getEmail(), shortPassword);
+        registrationPage.register(user.getName(), user.getEmail(), shortPassword);
 
         assertTrue("Сообщение об ошибке пароля не появилось",
                 registrationPage.isPasswordErrorDisplayed());
-    }
-
-    @After
-    public void tearDown() {
-        if (accessToken != null) {
-            userApi.delete(accessToken);
-        }
-        if (driver != null) {
-            driver.quit();
-        }
     }
 }

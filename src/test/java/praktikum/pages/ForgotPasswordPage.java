@@ -1,25 +1,30 @@
 package praktikum.pages;
 
-import org.openqa.selenium.By;
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import praktikum.utils.AppConfig;
 
 public class ForgotPasswordPage {
     private final WebDriver driver;
-    private final By loginLink = By.xpath("//a[text()='Войти']");
+
+    @FindBy(xpath = "//a[text()='Войти']")
+    private WebElement loginLink;
 
     public ForgotPasswordPage(WebDriver driver) {
         this.driver = driver;
+        PageFactory.initElements(driver, this);
     }
 
+    @Step("Открыть страницу восстановления пароля")
     public void open() {
-        driver.get("https://stellarburgers.education-services.ru/forgot-password");
+        driver.get(AppConfig.FORGOT_PASSWORD_PAGE);
     }
 
+    @Step("Нажать ссылку 'Войти' на странице восстановления")
     public void clickLoginLink() {
-        driver.findElement(loginLink).click();
+        loginLink.click();
     }
 }

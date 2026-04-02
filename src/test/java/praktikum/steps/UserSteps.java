@@ -19,6 +19,15 @@ public class UserSteps {
         return currentUser;
     }
 
+    @Step("Залогиниться как текущий пользователь")
+    public void login() {
+        if (currentUser == null) {
+            throw new IllegalStateException("Нет текущего пользователя. Сначала создайте пользователя.");
+        }
+        Response response = userApi.login(currentUser);
+        accessToken = response.then().extract().path("accessToken");
+    }
+
     @Step("Удалить текущего пользователя")
     public void deleteUser() {
         if (accessToken != null) {
