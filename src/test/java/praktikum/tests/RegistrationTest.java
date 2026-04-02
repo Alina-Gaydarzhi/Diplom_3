@@ -8,6 +8,7 @@ import praktikum.base.BaseTest;
 import praktikum.pages.MainPage;
 import praktikum.pages.LoginPage;
 import praktikum.pages.RegistrationPage;
+import praktikum.utils.TestUserFactory;
 
 import static org.junit.Assert.assertTrue;
 
@@ -27,23 +28,31 @@ public class RegistrationTest extends BaseTest {
     @Test
     @DisplayName("Успешная регистрация пользователя")
     public void shouldRegisterNewUserSuccessfully() {
-        UserCredentials newUser = userSteps.createRandomUser();
+        // Только генерируем данные, НЕ создаём через API
+        UserCredentials newUser = TestUserFactory.createRandomUser();
 
         registrationPage.open();
         registrationPage.register(newUser.getName(), newUser.getEmail(), newUser.getPassword());
 
+        // Ожидаем перехода на страницу логина после успешной регистрации
         loginPage.waitForPageLoad();
+
+        // Выполняем вход через UI, чтобы проверить, что пользователь создан
         loginPage.login(newUser.getEmail(), newUser.getPassword());
 
+        // Проверяем, что вход выполнен (отображается кнопка заказа)
         assertTrue("Пользователь не авторизован: кнопка заказа не отображается",
                 mainPage.isOrderButtonDisplayed());
+
+        // Получаем токен через API для удаления пользователя после теста
+        accessToken = userSteps.loginUser(newUser);
     }
 
     @Test
     @DisplayName("Ошибка при регистрации с паролем короче 6 символов")
     public void shouldShowErrorForShortPassword() {
         String shortPassword = "12345";
-        UserCredentials user = userSteps.createRandomUser();
+        UserCredentials user = TestUserFactory.createRandomUser();
 
         registrationPage.open();
         registrationPage.register(user.getName(), user.getEmail(), shortPassword);

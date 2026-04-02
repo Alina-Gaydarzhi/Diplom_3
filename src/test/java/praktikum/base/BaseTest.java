@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import praktikum.api.UserApi;
 import praktikum.steps.UserSteps;
 
 import java.time.Duration;
@@ -18,6 +19,8 @@ import java.time.Duration;
 public class BaseTest {
     protected WebDriver driver;
     protected UserSteps userSteps;
+    protected UserApi userApi;
+    protected String accessToken;
 
     private static final String BASE_URL = "https://stellarburgers.education-services.ru";
 
@@ -47,12 +50,16 @@ public class BaseTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
         userSteps = new UserSteps();
+        userApi = new UserApi();
     }
 
     @After
     public void tearDown() {
+        if (accessToken != null) {
+            userApi.deleteUser(accessToken);   // Удаление пользователя по токену
+        }
         if (userSteps != null) {
-            userSteps.deleteUser();
+            userSteps.deleteUser();            // Удаление пользователя, созданного через API (если был)
         }
         if (driver != null) {
             driver.quit();

@@ -28,6 +28,12 @@ public class UserSteps {
         accessToken = response.then().extract().path("accessToken");
     }
 
+    @Step("Логин пользователя через API и получение токена")
+    public String loginUser(UserCredentials user) {
+        Response response = userApi.login(user);
+        return response.then().extract().path("accessToken");
+    }
+
     @Step("Удалить текущего пользователя")
     public void deleteUser() {
         if (accessToken != null) {
