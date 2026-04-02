@@ -3,47 +3,59 @@ package praktikum.tests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import praktikum.pages.LoginPage;
+import praktikum.pages.RegistrationPage;
 
 import static org.junit.Assert.assertTrue;
 
 public class RegistrationTest {
     private WebDriver driver;
+    private RegistrationPage registrationPage;
+    private LoginPage loginPage;
 
     @Before
     public void setUp() {
         driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver.manage().window().maximize();
+        registrationPage = new RegistrationPage(driver);
+        loginPage = new LoginPage(driver);
     }
 
     @Test
-    public void registerUserSuccessfully() {
-        driver.findElement(By.name("name")).sendKeys("Test User");
-        driver.findElement(By.name("email")).sendKeys("test" + System.currentTimeMillis() + "@mail.com");
-        driver.findElement(By.name("password")).sendKeys("123456");
+    public void shouldRegisterNewUserSuccessfully() {
+        String email = "test" + System.currentTimeMillis() + "@test.com";
+        String password = "123456";
+        String name = "Test User";
 
-        driver.findElement(By.xpath("//button[text()='Зарегистрироваться']")).click();
+        registrationPage.open();
+        registrationPage.waitForPageLoad();
+        registrationPage.register(name, email, password);
 
-        assertTrue(driver.getCurrentUrl().contains("login"));
+        loginPage.waitForPageLoad();
+        assertTrue("После регистрации не перешли на страницу логина",
+                driver.getCurrentUrl().contains("login"));
     }
 
     @Test
-    public void registerWithShortPassword() {
-        driver.findElement(By.name("name")).sendKeys("Test User");
-        driver.findElement(By.name("email")).sendKeys("test@mail.com");
-        driver.findElement(By.name("password")).sendKeys("123");
+    public void shouldShowErrorForShortPassword() {
+        String email = "test@test.com";
+        String shortPassword = "12345";
+        String name = "Test User";
 
-        driver.findElement(By.xpath("//button[text()='Зарегистрироваться']")).click();
+        registrationPage.open();
+        registrationPage.waitForPageLoad();
+        registrationPage.register(name, email, shortPassword);
 
-        WebElement error = driver.findElement(By.xpath("//p[contains(text(),'Некорректный пароль')]"));
-        assertTrue(error.isDisplayed());
+        assertTrue("Сообщение об ошибке пароля не появилось",
+                registrationPage.isPasswordErrorDisplayed());
     }
 
     @After
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
