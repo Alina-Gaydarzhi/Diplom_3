@@ -1,5 +1,6 @@
 package praktikum.tests;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,17 +28,15 @@ public class RegistrationTest extends BaseTest {
 
     @Test
     @DisplayName("Успешная регистрация пользователя")
+    @Description("Проверяет, что пользователь может зарегистрироваться через UI, после чего выполнить вход и увидеть кнопку 'Оформить заказ'")
     public void shouldRegisterNewUserSuccessfully() {
-        // Только генерируем данные, НЕ создаём через API
         UserCredentials newUser = TestUserFactory.createRandomUser();
 
         registrationPage.open();
         registrationPage.register(newUser.getName(), newUser.getEmail(), newUser.getPassword());
 
-        // Ожидаем перехода на страницу логина после успешной регистрации
         loginPage.waitForPageLoad();
 
-        // Выполняем вход через UI, чтобы проверить, что пользователь создан
         loginPage.login(newUser.getEmail(), newUser.getPassword());
 
         // Проверяем, что вход выполнен (отображается кнопка заказа)
@@ -50,6 +49,7 @@ public class RegistrationTest extends BaseTest {
 
     @Test
     @DisplayName("Ошибка при регистрации с паролем короче 6 символов")
+    @Description("Проверяет, что при вводе пароля длиной менее 6 символов появляется сообщение 'Некорректный пароль'")
     public void shouldShowErrorForShortPassword() {
         String shortPassword = "12345";
         UserCredentials user = TestUserFactory.createRandomUser();

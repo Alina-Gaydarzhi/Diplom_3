@@ -1,5 +1,6 @@
 package praktikum.tests;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     @DisplayName("Вход через кнопку 'Войти в аккаунт' на главной")
+    @Description("Пользователь переходит на главную страницу, нажимает 'Войти в аккаунт', вводит email и пароль, после чего успешно авторизуется")
     public void shouldLoginFromMainPageButton() {
         mainPage.open();
         mainPage.clickLoginButton();
@@ -42,6 +44,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     @DisplayName("Вход через кнопку 'Личный кабинет'")
+    @Description("Пользователь открывает главную страницу, кликает 'Личный кабинет', вводит данные и успешно входит в систему")
     public void shouldLoginFromPersonalAccountButton() {
         mainPage.open();
         mainPage.getHeader().clickPersonalAccount();
@@ -57,6 +60,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     @DisplayName("Вход через ссылку 'Войти' на странице регистрации")
+    @Description("Пользователь открывает страницу регистрации, нажимает ссылку 'Войти', вводит данные и успешно авторизуется")
     public void shouldLoginFromRegistrationPageLink() {
         registrationPage.open();
         registrationPage.clickLoginLink();
@@ -72,6 +76,7 @@ public class LoginTest extends BaseTest {
 
     @Test
     @DisplayName("Вход через ссылку 'Войти' на странице восстановления пароля")
+    @Description("Пользователь открывает страницу восстановления пароля, нажимает ссылку 'Войти', вводит данные и успешно входит")
     public void shouldLoginFromForgotPasswordPageLink() {
         forgotPasswordPage.open();
         forgotPasswordPage.clickLoginLink();

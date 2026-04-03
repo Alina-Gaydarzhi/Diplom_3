@@ -1,5 +1,6 @@
 package praktikum.tests;
 
+import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,7 @@ public class ConstructorTest extends BaseTest {
 
     @Test
     @DisplayName("Переход к разделу 'Булки'")
+    @Description("Проверяет, что после клика на вкладку 'Булки' (с предварительным кликом на 'Соусы') активным становится раздел с булками")
     public void shouldSwitchToBunsSection() {
         mainPage.clickSaucesTab();
         mainPage.clickBunsTab();
@@ -30,6 +32,7 @@ public class ConstructorTest extends BaseTest {
 
     @Test
     @DisplayName("Переход к разделу 'Соусы'")
+    @Description("Проверяет, что после клика на вкладку 'Соусы' активным становится раздел с соусами")
     public void shouldSwitchToSaucesSection() {
         mainPage.clickSaucesTab();
 
@@ -39,6 +42,7 @@ public class ConstructorTest extends BaseTest {
 
     @Test
     @DisplayName("Переход к разделу 'Начинки'")
+    @Description("Проверяет, что после клика на вкладку 'Начинки' активным становится раздел с начинками")
     public void shouldSwitchToFillingsSection() {
         mainPage.clickFillingsTab();
 
